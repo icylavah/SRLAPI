@@ -145,6 +145,16 @@ function project:stop()
 	return self
 end
 
+function project:getCursorPosition()
+	return reaper.GetCursorPositionEx(self)
+end
+
+function project:setCursorPosition(position)
+	reaper.SetEditCurPos2(self, position, false, false)
+	
+	return self
+end
+
 function project:doAction(id)
 	reaper.Main_OnCommandEx(id, 0, self)
 end
