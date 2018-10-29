@@ -105,6 +105,46 @@ function project:getTracks()
 	return tracks
 end
 
+function project:isPlaying()
+	return reaper.GetPlayStateEx(self) & 1 ~= 0
+end
+
+function project:isPaused()
+	return reaper.GetPlayStateEx(self) & 2 ~= 0
+end
+
+function project:isRecording()
+	return reaper.GetPlayStateEx(self) & 4 ~= 0
+end
+
+function project:isLooping()
+	return reaper.GetSetRepeatEx(self, -1) ~= 0
+end
+
+function project:setLooping(looping)
+	reaper.GetSetRepeatEx(self, looping and 1 or 0)
+	
+	return self
+end
+
+function project:play()
+	if not self:isPlaying() or self:isPaused() then reaper.OnPlayButtonEx(self) end
+	
+	return self
+end
+
+function project:pause()
+	if not self:isPaused() then reaper.OnPauseButtonEx(self) end
+	
+	return self
+end
+
+function project:stop()
+	reaper.OnStopButtonEx(self)
+	
+	return self
+end
+
 function project:doAction(id)
 	reaper.Main_OnCommandEx(id, 0, self)
 end
