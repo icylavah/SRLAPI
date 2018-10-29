@@ -135,8 +135,64 @@ function track:getParent()
 	return self:getProject():getMasterTrack()
 end
 
+function track:getChild(i)
+	local k = 1
+	local project = self:getProject()
+	for j = self:getIndex() + 1, project:getTrackCount() do
+		local other = project:getTrack(j)
+		if other:getDepth() <= self:getDepth() then return nil end
+		if other:getDepth() == self:getDepth() + 1 then
+			if k == i then return other end
+			k = k + 1
+		end
+	end
+	
+	return nil
+end
+
+local comp = {
+	[false] = function(a, b) return a == b + 1 end,
+	[true] = function(a, b) return a >= b + 1 end,
+}
+function track:getChildCount(recursive)
+	if recursive == nil then recursive = false end
+	local comp = comp[recursive]
+	
+	local count = 0
+	local project = self:getProject()
+	for i = self:getIndex() + 1, project:getTrackCount() do
+		if comp(project:getTrack(i):getDepth(), self:getDepth()) then
+			count = count + 1
+		end
+	end
+	
+	return count
+end
+
+function track:getChildren(recursive)
+	if recursive == nil then recursive = false end
+	local comp = comp[recursive]
+	
+	local children = {}
+	local project = self:getProject()
+	for i = self:getIndex() + 1, project:getTrackCount() do
+		local other = project:getTrack(i)
+		if other:getDepth() <= self:getDepth() then return children end
+		if comp(other:getDepth(), self:getDepth()) then
+			table.insert(children, other)
+		end
+	end
+	
+	return children
+end
+
 function track:isMaster()
 	return self:getIndex() == -1
+end
+
+function track:getDepth()
+	if self:isMaster() then return 0 end
+	return reaper.GetTrackDepth(self) + 1
 end
 
 function track:getIndex()
