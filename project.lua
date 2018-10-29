@@ -97,7 +97,7 @@ end
 
 function project:getTracks()
 	local count = self:getTrackCount()
-	local track = {}
+	local tracks = {}
 	for i = 1, count do
 		table.insert(tracks, self:getTrack(i))
 	end

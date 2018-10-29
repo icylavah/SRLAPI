@@ -72,6 +72,15 @@ function window.menu(t, x, y)
 	return gfx.showmenu(items(t))
 end
 
+function window.color()
+	local status, color = reaper.GR_SelectColor()
+	if status == 1 then
+		local r, g, b = reaper.ColorFromNative(color)
+		return r / 255, g / 255, b / 255
+	end
+	return nil
+end
+
 window._open = false
 
 return window
