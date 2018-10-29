@@ -69,7 +69,7 @@ function window.menu(t, x, y)
 	
 	srlapi.graphics.setPosition(x, y)
 	
-	gfx.showmenu(items(t))
+	return gfx.showmenu(items(t))
 end
 
 window._open = false
