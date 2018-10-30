@@ -63,7 +63,7 @@ function graphics.print(text, x, y)
 	y = y or 0
 	
 	graphics.setPosition(x, y)
-	gfx.drawstr(text)
+	gfx.drawstr(tostring(text))
 end
 
 return graphics

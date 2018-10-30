@@ -26,6 +26,7 @@ function track:isVisibleInMixer()
 	return reaper.IsTrackVisible(self, true)
 end
 
+-- must call srlapi.refresh() afterwards
 function track:setVisibleInMixer(visible)
 	if self:isMaster() then
 		reaper.SetMasterTrackVisibility((visible and 2 or 0) + (self:isVisibleInTCP() and 1 or 0))
@@ -43,6 +44,7 @@ function track:isVisibleInTCP()
 	return reaper.IsTrackVisible(self, false)
 end
 
+-- must call srlapi.refresh() afterwards
 function track:setVisibleInTCP(visible)
 	if self:isMaster() then
 		reaper.SetMasterTrackVisibility((self:isVisibleInMixer() and 2 or 0) + (visible and 1 or 0))
@@ -67,10 +69,144 @@ function track:isVisible(fully)
 	return fullyVisible[fully or false](self)
 end
 
+-- must call srlapi.refresh() afterwards
 function track:setVisible(visible)
 	self:setVisibleInTCP(visible)
 	self:setVisibleInMixer(visible)
 	
+	return self
+end
+
+function track:isMuted()
+	return reaper.GetMediaTrackInfo_Value(self, 'B_MUTE') ~= 0
+end
+
+function track:setMuted(muted)
+	reaper.SetMediaTrackInfo_Value(self, 'B_MUTE', muted and 1 or 0)
+	return self
+end
+
+function track:isPhaseInverted()
+	return reaper.GetMediaTrackInfo_Value(self, 'B_PHASE') ~= 0
+end
+
+function track:setPhaseInverted(inverted)
+	reaper.SetMediaTrackInfo_Value(self, 'B_PHASE', inverted and 1 or 0)
+	return self
+end
+
+function track:isSoloed()
+	return reaper.GetMediaTrackInfo_Value(self, 'I_SOLO') ~= 0
+end
+
+function track:setSoloed(soloed)
+	reaper.SetMediaTrackInfo_Value(self, 'I_SOLO', soloed and 1 or 0)
+	return self
+end
+
+function track:areEffectsEnabled()
+	return reaper.GetMediaTrackInfo_Value(self, 'I_FXEN') ~= 0
+end
+
+function track:setEffectsEnabled(enabled)
+	reaper.SetMediaTrackInfo_Value(self, 'I_FXEN', enabled and 1 or 0)
+	return self
+end
+
+function track:isArmed()
+	return reaper.GetMediaTrackInfo_Value(self, 'I_RECARM') ~= 0
+end
+
+function track:setArmed(armed)
+	reaper.SetMediaTrackInfo_Value(self, 'I_RECARM', armed and 1 or 0)
+	return self
+end
+
+local automationModes = {
+	[0] = 'trim',
+	'read',
+	'touch',
+	'write',
+	'latch',
+	'preview'
+}
+
+local automationModesInverse = {}
+for i = 0, #automationModes do automationModesInverse[automationModes[i]] = i end
+
+function track:getAutomationMode()
+	return automationModes[reaper.GetMediaTrackInfo_Value(self, 'I_AUTOMODE')]
+end
+
+function track:setAutomationMode(mode)
+	reaper.SetMediaTrackInfo_Value(self, 'I_AUTOMODE', automationModesInverse[mode])
+	return self
+end
+
+function track:getChannelCount()
+	return reaper.GetMediaTrackInfo_Value(self, 'I_NCHAN')
+end
+
+function track:setChannelCount(channels)
+	assert(channels % 2 == 0, 'track:setChannelCount(channels): channels must be an even integer')
+	reaper.SetMediaTrackInfo_Value(self, 'I_NCHAN', channels)
+	return self
+end
+
+function track:getHeight()
+	local h = reaper.GetMediaTrackInfo_Value(self, 'I_HEIGHTOVERRIDE')
+	if h == 0 then h = reaper.GetMediaTrackInfo_Value(self, 'I_WNDH') end
+	return h
+end
+
+-- must call srlapi.refresh() afterwards
+function track:setHeight(height)
+	if height then
+		reaper.SetMediaTrackInfo_Value(self, 'I_HEIGHTOVERRIDE', height)
+	else
+		reaper.SetMediaTrackInfo_Value(self, 'I_HEIGHTOVERRIDE', 0)
+	end
+	
+	return self
+end
+
+function track:isFolder()
+	return reaper.GetMediaTrackInfo_Value(self, 'I_FOLDERDEPTH') == 1
+end
+
+function track:getVolume()
+	return reaper.GetMediaTrackInfo_Value(self, 'D_VOL')
+end
+
+function track:setVolume(volume)
+	reaper.SetMediaTrackInfo_Value(self, 'D_VOL', volume)
+	return self
+end
+
+function track:getPan()
+	return reaper.GetMediaTrackInfo_Value(self, 'D_PAN')
+end
+
+function track:setPan(pan)
+	reaper.SetMediaTrackInfo_Value(self, 'D_PAN', pan)
+	return self
+end
+
+function track:getWideness()
+	return reaper.GetMediaTrackInfo_Value(self, 'D_WIDTH')
+end
+
+function track:setWideness(wideness)
+	reaper.SetMediaTrackInfo_Value(self, 'D_WIDTH', wideness)
+	return self
+end
+
+function track:getParentSend()
+	return reaper.GetMediaTrackInfo_Value(self, 'B_MAINSEND') ~= 0
+end
+
+function track:setParentSend(send)
+	reaper.SetMediaTrackInfo_Value(self, 'B_MAINSEND', send and 1 or 0)
 	return self
 end
 
