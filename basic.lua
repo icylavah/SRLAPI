@@ -55,9 +55,17 @@ end
 local loop
 local time
 function srlapi.run()
-	if srlapi.quit then reaper.atexit(srlapi.quit) end
-	if srlapi.load then srlapi.load() end
 	srlapi.running = true
+	if srlapi.quit then reaper.atexit(srlapi.quit) end
+	if srlapi.load then
+		local status, err = pcall(srlapi.load)
+	
+		if not status and not err:match(srlapi.event._quitMessage) then
+			srlapi.error(debug.traceback(err))
+		elseif not srlapi.running then
+			return
+		end
+	end
 	
 	time = srlapi.timer.getTime()
 	loop()
