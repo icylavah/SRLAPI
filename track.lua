@@ -311,7 +311,8 @@ function track:getChildren(recursive)
 	
 	local children = {}
 	local project = self:getProject()
-	for i = self:getIndex() + 1, project:getTrackCount() do
+	local start = self:isMaster() and 1 or (self:getIndex() + 1)
+	for i = start, project:getTrackCount() do
 		local other = project:getTrack(i)
 		if other:getDepth() <= self:getDepth() then return children end
 		if comp(other:getDepth(), self:getDepth()) then

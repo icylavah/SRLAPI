@@ -2,11 +2,12 @@ local srlapi = srlapi
 local window = {}
 
 function window._updateLastWH()
-	window._lastW, window._lastH = gfx.w, gfx.h
+	window._lastW, window._lastH = window.getDimensions()
 end
 
 function window._matchWH()
-	return window._lastW == gfx.w and window._lastH == gfx.h
+	local w, h = window.getDimensions()
+	return window._lastW == w and window._lastH == h
 end
 
 function window.create(x, y, w, h, title, docked)
@@ -28,6 +29,18 @@ function window.create(x, y, w, h, title, docked)
 	
 	window._open = true
 	window._updateLastWH()
+end
+
+function window.getDimensions()
+	return gfx.getimgdim(-1)
+end
+
+function window.getWidth()
+	return (window.getDimensions())
+end
+
+function window.getHeight()
+	return select(2, window.getDimensions())
 end
 
 function window.close()
