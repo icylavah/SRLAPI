@@ -156,14 +156,17 @@ function project:setCursorPosition(position)
 end
 
 -- https://stackoverflow.com/a/6081639
-
 local function serializeTable(val, name, skipnewlines, depth)
     skipnewlines = skipnewlines or false
     depth = depth or 0
 
     local tmp = string.rep(" ", skipnewlines and 0 or depth)
 
-    if name then tmp = tmp .. name .. " = " end
+	if name then
+		local v = "[" .. string.format("%q", name) .. "]"
+		if depth == 0 then v = "_G" .. v end
+		tmp = tmp .. v .. " = "
+	end
 
     if type(val) == "table" then
         tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
@@ -193,6 +196,7 @@ local function getScriptID()
 end
 
 local cache = {}
+cache._G = cache
 
 function project:setCookie(key, value)
 	assert(type(key) == 'string')

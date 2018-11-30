@@ -357,6 +357,10 @@ function track:getItems(i)
 	return items
 end
 
+function track:getGUID()
+	return reaper.GetTrackGUID(self)
+end
+
 function track:getType()
 	return 'track'
 end
