@@ -155,6 +155,70 @@ function project:setCursorPosition(position)
 	return self
 end
 
+-- https://stackoverflow.com/a/6081639
+
+local function serializeTable(val, name, skipnewlines, depth)
+    skipnewlines = skipnewlines or false
+    depth = depth or 0
+
+    local tmp = string.rep(" ", skipnewlines and 0 or depth)
+
+    if name then tmp = tmp .. name .. " = " end
+
+    if type(val) == "table" then
+        tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
+
+		for k, v in pairs(val) do
+			if type(k) ~= 'string' then k = '[' .. k .. ']' end
+            tmp =  tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
+        end
+
+        tmp = tmp .. string.rep(" ", depth) .. "}"
+    elseif type(val) == "number" then
+        tmp = tmp .. tostring(val)
+    elseif type(val) == "string" then
+        tmp = tmp .. string.format("%q", val)
+    elseif type(val) == "boolean" then
+        tmp = tmp .. (val and "true" or "false")
+    else
+        tmp = tmp .. "\"[inserializeable datatype:" .. type(val) .. "]\""
+    end
+
+    return tmp
+end
+
+local function getScriptID()
+	local _, _, _, cmdID, _, _, _ = reaper.get_action_context()
+	return cmdID .. ''
+end
+
+local cache = {}
+
+function project:setCookie(key, value)
+	assert(type(key) == 'string')
+	
+	cache[key] = nil
+	
+	if value ~= nil then
+		value = serializeTable(value, key, true)
+		value = value .. '_'
+	end
+	
+	reaper.SetProjExtState(self, getScriptID(), key, value or "")
+end
+
+function project:getCookie(key)
+	assert(type(key) == 'string')
+	
+	if cache[key] then return cache[key] end
+	
+	local v = select(2, reaper.GetProjExtState(self, getScriptID(), key))
+	if not v or v == "" then return nil end
+	load(v:sub(1, -2), 'cookie', 'bt', cache)()
+	
+	return cache[key]
+end
+
 function project:doAction(id)
 	reaper.Main_OnCommandEx(id, 0, self)
 end
