@@ -16,6 +16,7 @@ function graphics.getColor()
 end
 
 function graphics.setColor(r, g, b, a)
+	if type(r) == 'table' then r, g, b, a = r[1], r[2], r[3], r[4] end
 	gfx.r, gfx.g, gfx.b, gfx.a = r, g, b, a or gfx.a
 end
 
@@ -64,6 +65,26 @@ function graphics.print(text, x, y)
 	
 	graphics.setPosition(x, y)
 	gfx.drawstr(tostring(text))
+end
+
+function graphics.newCanvas(w, h)
+	local canvas = setmetatable({
+		w = w,
+		h = h
+	}, srlapi.canvas._mt)
+	
+	canvas.handle = srlapi.canvas._newHandle(canvas)
+	gfx.setimgdim(canvas.handle, w, h)
+	
+	return canvas
+end
+
+function graphics.setCanvas(canvas)
+	if not canvas then
+		gfx.dest = -1
+	else
+		gfx.dest = canvas.handle
+	end
 end
 
 return graphics

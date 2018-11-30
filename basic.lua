@@ -150,6 +150,7 @@ local function innerLoop()
 end
 
 function loop()
+	collectgarbage()
 	local status, err = pcall(innerLoop)
 	
 	if not status and not err:match(srlapi.event._quitMessage) then

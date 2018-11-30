@@ -41,6 +41,7 @@ srlapi.mouse = require 'mouse'
 srlapi.keyboard = require 'keyboard'
 srlapi.graphics = require 'graphics'
 srlapi.timer = require 'timer'
+srlapi.canvas = require 'canvas'
 
 require 'path'
 
