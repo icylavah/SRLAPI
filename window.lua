@@ -94,6 +94,10 @@ function window.color()
 	return nil
 end
 
+function window.value(title, name, extraWidth)
+	return select(2, reaper.GetUserInputs(title or 'Enter a value', 1, (name or 'Value') .. ': ,extrawidth=' .. ((extraWidth or 0) + 50), ''))
+end
+
 window._open = false
 
 return window
