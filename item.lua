@@ -21,6 +21,26 @@ function item:setSelected(selected)
 	return self
 end
 
+function item:getPosition()
+	return reaper.GetMediaItemInfo_Value(self, 'D_POSITION')
+end
+
+function item:setPosition(position)
+	reaper.SetMediaItemPosition(self, position, true)
+	
+	return self
+end
+
+function item:getLength()
+	return reaper.GetMediaItemInfo_Value(self, 'D_LENGTH')
+end
+
+function item:setLength(length)
+	reaper.SetMediaItemLength(self, length, true)
+	
+	return self
+end
+
 function item:getNotes()
 	return select(2, reaper.GetSetMediaItemInfo_String(self, 'P_NOTES', '', false))
 end
