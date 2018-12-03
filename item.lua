@@ -109,6 +109,117 @@ function item:setLength(length)
 	return self
 end
 
+local CURVE = 'curve'
+
+local CURVE_WIDER = 'curve_wider' -- a curve that is kinda like CURVE but
+-- not actually and also bends a bit more ¯\_(ツ)_/¯
+
+local CURVE_WIDEST = 'curve_widest' -- a curve that is kinda like CURVE_WIDER but
+-- not actually and also bends a bit more in the outwards direction; REAPER y u do dis
+
+local CURVE_DOUBLE = 'curve_double' -- a curve that bends both ways
+
+local CURVE_DOUBLE_WIDER = 'curve_double_wider' -- kinda like CURVE_DOUBLE but more bendy
+
+local fades = {
+	[0] = CURVE_WIDER,
+	CURVE_WIDEST,
+	CURVE,
+	CURVE_WIDER,
+	CURVE_WIDER,
+	CURVE_DOUBLE,
+	CURVE_DOUBLE_WIDER,
+	CURVE_WIDEST
+}
+local fadesInverse = {
+	[CURVE] = 2,
+	[CURVE_WIDER] = 0,
+	[CURVE_WIDEST] = 1,
+	[CURVE_DOUBLE] = 5,
+	[CURVE_DOUBLE_WIDER] = 6
+}
+
+function item:getFadeInType()
+	return fades[reaper.GetMediaItemInfo_Value(self, 'C_FADEINSHAPE')]
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setFadeInType(type)
+	reaper.SetMediaItemInfo_Value(self, 'C_FADEINSHAPE', fadesInverse[type])
+	return self
+end
+
+function item:isCrossfadeIn()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEINLEN_AUTO') > 0
+end
+
+function item:getCrossfadeInLength()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEINLEN_AUTO')
+end
+
+function item:setCrossfadeInLength(length)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEINLEN_AUTO', length)
+end
+
+function item:getFadeInLength()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEINLEN')
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setFadeInLength(length)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEINLEN', length)
+end
+
+function item:getFadeInBend()
+	return -reaper.GetMediaItemInfo_Value(self, 'D_FADEINDIR')
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setFadeInBend(bend)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEINDIR', -bend)
+end
+
+function item:getFadeOutType()
+	return fades[reaper.GetMediaItemInfo_Value(self, 'C_FADEOUTSHAPE')]
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setFadeOutType(type)
+	reaper.SetMediaItemInfo_Value(self, 'C_FADEOUTSHAPE', fadesInverse[type])
+	return self
+end
+
+function item:isCrossfadeOut()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEOUTLEN_AUTO') > 0
+end
+
+function item:getCrossfadeOutLength()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEOUTLEN_AUTO')
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setCrossfadeOutLength(length)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEOUTLEN_AUTO', length)
+end
+
+function item:getFadeOutLength()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEOUTLEN')
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setFadeOutLength(length)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEOUTLEN', length)
+end
+
+function item:getFadeOutBend()
+	return reaper.GetMediaItemInfo_Value(self, 'D_FADEOUTDIR')
+end
+
+-- must call srlapi.refresh() afterwards
+function item:setFadeOutBend(bend)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEOUTDIR', bend)
+end
+
 function item:getSnapOffset()
 	return reaper.GetMediaItemInfo_Value(self, 'D_SNAPOFFSET')
 end
