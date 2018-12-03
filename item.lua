@@ -176,7 +176,7 @@ end
 
 -- must call srlapi.refresh() afterwards
 function item:setFadeInBend(bend)
-	return reaper.SetMediaItemInfo_Value(self, 'D_FADEINDIR', -bend)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEINDIR', math.max(-1, math.min(-bend, 1)))
 end
 
 function item:getFadeOutType()
@@ -217,7 +217,7 @@ end
 
 -- must call srlapi.refresh() afterwards
 function item:setFadeOutBend(bend)
-	return reaper.SetMediaItemInfo_Value(self, 'D_FADEOUTDIR', bend)
+	return reaper.SetMediaItemInfo_Value(self, 'D_FADEOUTDIR', math.max(-1, math.min(bend, 1)))
 end
 
 function item:getSnapOffset()
